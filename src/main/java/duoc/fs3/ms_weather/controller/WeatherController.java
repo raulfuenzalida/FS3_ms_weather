@@ -130,39 +130,6 @@ public class WeatherController {
     }
 
     /**
-     * Obtiene el historial de datos del clima para una ciudad.
-     * 
-     * @param cityName Nombre de la ciudad
-     * @param startDate Fecha de inicio (formato yyyy-MM-dd)
-     * @param endDate Fecha de fin (formato yyyy-MM-dd)
-     * @return Lista de WeatherResponse con el historial
-     */
-    @GetMapping("/history/{cityName}")
-    @Operation(summary = "Obtener historial de clima", description = "Obtiene el historial de datos del clima para una ciudad en un rango de fechas")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Historial de datos del clima obtenido"),
-        @ApiResponse(responseCode = "400", description = "Formato de fecha inválido")
-    })
-    public ResponseEntity<List<WeatherResponse>> getWeatherHistory(
-            @Parameter(description = "Nombre de la ciudad", example = "Santiago")
-            @PathVariable String cityName,
-            @Parameter(description = "Fecha de inicio", example = "2026-01-01")
-            @RequestParam String startDate,
-            @Parameter(description = "Fecha de fin", example = "2026-01-31")
-            @RequestParam String endDate) {
-        
-        log.info("Petición GET /api/weather/history/{}?startDate={}&endDate={}", cityName, startDate, endDate);
-        
-        try {
-            List<WeatherResponse> history = weatherService.getWeatherHistory(cityName, startDate, endDate);
-            return ResponseEntity.ok(history);
-        } catch (Exception e) {
-            log.error("Error al obtener historial del clima: {}", e.getMessage());
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    /**
      * Endpoint de health check para verificar que el servicio está funcionando.
      * 
      * @return Mensaje de estado del servicio

@@ -4,8 +4,8 @@ Microservicio de gestión de datos del clima de Chile desarrollado con Spring Bo
 
 ## 🌟 Características
 
-- **Cron Job Automático**: Recolecta datos del clima desde API externa diariamente a las 9:20 AM
-- **Base de Datos MySQL**: Almacena datos de todas las ciudades de Chile en `weather_db`
+- **Cron Job Automático**: Recolecta datos del clima desde API externa diariamente y reemplaza los datos existentes
+- **Base de Datos MySQL**: Almacena datos actualizados de todas las ciudades de Chile en `weather_db`
 - **Endpoints REST**: API para consulta de datos del clima desde frontend
 - **Configuración Flexible**: Hora de ejecución del cron configurable desde `application.properties`
 - **Documentación Swagger**: API documentada automáticamente con OpenAPI 3.0
@@ -134,11 +134,6 @@ GET /api/weather/all/latest
 GET /api/weather/all
 ```
 
-#### Obtener historial de clima
-```http
-GET /api/weather/history/{cityName}?startDate=2026-01-01&endDate=2026-01-31
-```
-
 #### Health Check
 ```http
 GET /api/weather/health
@@ -188,7 +183,7 @@ El microservicio sigue una arquitectura limpia con separación clara de responsa
 - **Cron**: Tareas programadas y consumo de API externa
 
 ### Flujo de Datos
-1. **Cron Job** (diario a las 9:20 AM) → Llama a API externa → Almacena en base de datos
+1. **Cron Job** (diario según configuración) → Elimina datos existentes → Llama a API externa → Almacena nuevos datos en base de datos
 2. **Frontend** → Llama a endpoints REST → Consulta datos almacenados
 
 ## ⚙️ Configuración
@@ -223,6 +218,8 @@ INFO - Iniciando actualización automática de datos del clima
 INFO - Intento 1 de actualización de datos del clima
 INFO - Obteniendo datos del clima desde la API: https://api.boostr.cl/weather.json
 INFO - Datos del clima obtenidos exitosamente. Total de ciudades: 32
+INFO - Eliminando todos los registros de datos del clima
+INFO - Todos los registros de datos del clima han sido eliminados
 INFO - Se guardaron 32 registros de datos del clima
 INFO - Actualización de datos del clima completada exitosamente
 ```

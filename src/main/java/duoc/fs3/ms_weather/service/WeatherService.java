@@ -206,4 +206,15 @@ public class WeatherService {
         LocalDateTime cutoffDate = LocalDateTime.now().minusDays(daysToKeep);
         return weatherRepository.deleteOldRecords(cutoffDate);
     }
+
+    /**
+     * Elimina todos los registros de datos del clima de la base de datos.
+     * Este método se utiliza antes de insertar nuevos datos para reemplazar
+     * los existentes en lugar de acumularlos.
+     */
+    public void deleteAllWeatherData() {
+        log.info("Eliminando todos los registros de datos del clima");
+        weatherRepository.deleteAll();
+        log.info("Todos los registros de datos del clima han sido eliminados");
+    }
 }

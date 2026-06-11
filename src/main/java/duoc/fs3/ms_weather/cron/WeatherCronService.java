@@ -58,6 +58,7 @@ public class WeatherCronService {
                 List<WeatherData> weatherDataList = fetchAndProcessWeatherData();
                 
                 if (!weatherDataList.isEmpty()) {
+                    weatherService.deleteAllWeatherData();
                     weatherService.saveAllWeatherData(weatherDataList);
                     log.info("Se guardaron {} registros de datos del clima", weatherDataList.size());
                     success = true;
