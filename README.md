@@ -12,6 +12,7 @@ Microservicio de gestión de datos del clima de Chile desarrollado con Spring Bo
 - **Arquitectura Limpia**: Separación de responsabilidades clara
 - **CORS Configurado**: Habilitado para frontend (localhost:3000, 4200, 8081)
 - **Logging Estructurado**: Logs detallados para monitoreo y debugging
+- **Docker ready**: Configurado para despliegue con Docker y docker-compose
 
 ## 🛠 Tecnologías
 
@@ -22,28 +23,43 @@ Microservicio de gestión de datos del clima de Chile desarrollado con Spring Bo
 - **Spring Scheduling** para cron jobs
 - **SpringDoc OpenAPI** para documentación de API
 - **Lombok** para reducir código boilerplate
+- **Docker** para contenedorización
 
 ## 📋 Requisitos Previos
 
 - **Java 17** o superior
 - **Maven 3.8+**
 - **MySQL Server** (configurado con Laragon para desarrollo local)
+- **Docker y docker-compose** (para despliegue con contenedores)
 - **IDE compatible** con Java (IntelliJ IDEA, Eclipse, VS Code)
 
 ## 🗄 Configuración de Base de Datos
 
-### 1. Crear la base de datos
+### Desarrollo Local
+
+#### 1. Crear la base de datos
 ```sql
 CREATE DATABASE weather_db;
 ```
 
-### 2. Ejecutar script SQL (opcional)
+#### 2. Ejecutar script SQL (opcional)
 ```bash
 mysql -u root -p < database-setup.sql
 ```
 
-### 3. Configuración automática
+#### 3. Configuración automática
 La aplicación se conectará automáticamente a `localhost:3306/weather_db` con el usuario `root` y sin contraseña (configuración por defecto de Laragon).
+
+### Docker / AWS EC2
+
+La aplicación ahora usa variables de entorno para la configuración de base de datos:
+
+- `DB_HOST`: IP del servidor MySQL (AWS EC2 o localhost para Docker local)
+- `DB_PORT`: Puerto MySQL (default 3306)
+- `DB_USER`: Usuario MySQL
+- `DB_PASSWORD`: Contraseña MySQL
+
+Ver sección **Despliegue con Docker** para más detalles.
 
 ## 🚀 Ejecución de la Aplicación
 
@@ -57,7 +73,48 @@ mvn spring-boot:run
 ### Desde IDE
 1. Importar el proyecto como proyecto Maven
 2. Ejecutar la clase `MsWeatherApplication.java`
-3. La aplicación estará disponible en `http://localhost:8081`
+3. La aplicación estará disponible en `http://localhost:8082`
+
+### Despliegue con Docker
+
+#### Construir el JAR
+```bash
+mvn clean package -DskipTests
+```
+
+#### Construir imagen Docker
+```bash
+docker build -t fs3-ms-weather .
+```
+
+#### Ejecutar con docker-compose
+```bash
+# Copiar .env.example a .env y configurar variables
+cp .env.example .env
+# Editar .env con tus valores de DB_HOST, DB_PORT, DB_USER, DB_PASSWORD
+
+# Iniciar contenedor
+docker-compose up -d
+```
+
+#### Ejecutar contenedor directamente
+```bash
+docker run -d -p 8082:8082 \
+  -e DB_HOST=tu-db-host \
+  -e DB_PORT=3306 \
+  -e DB_USER=root \
+  -e DB_PASSWORD=tu-password \
+  --name fs3-ms-weather \
+  fs3-ms-weather
+```
+
+#### Variables de Entorno Requeridas
+- `DB_HOST`: IP del servidor MySQL (para AWS EC2 usar IP pública, para Docker local usar `host.docker.internal` o IP de host)
+- `DB_PORT`: Puerto MySQL (default 3306)
+- `DB_USER`: Usuario MySQL
+- `DB_PASSWORD`: Contraseña MySQL
+
+Ver archivo `.env.example` para template de configuración.
 
 ### Verificación
 ```bash
@@ -189,7 +246,7 @@ El microservicio sigue una arquitectura limpia con separación clara de responsa
 ## ⚙️ Configuración
 
 ### application.properties
-Configuración principal incluyendo conexión a base de datos y expresión cron.
+Configuración principal incluyendo conexión a base de datos y expresión cron. Ahora usa variables de entorno para la configuración de base de datos.
 
 ### Variables de entorno importantes
 ```properties
